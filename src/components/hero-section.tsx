@@ -1,10 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-// import dynamic from "next/dynamic"
-
-// const Lottie = dynamic(() => import("lottie-react"), { ssr: false })
+import { motion, AnimatePresence } from "framer-motion";
+import { Paintbrush, GraduationCap, ChevronRight, Zap } from "lucide-react";
 
 export function HeroSection() {
   const scrollToContact = () => {
@@ -14,6 +13,31 @@ export function HeroSection() {
   const openWhatsApp = () => {
     window.open("https://wa.me/9817285068", "_blank");
   };
+
+  // Carousel steps
+  const steps = [
+    {
+      icon: <Paintbrush className="h-6 w-6 text-accent" />,
+      text: "Your brand ads on our notebooks cover",
+    },
+    {
+      icon: <GraduationCap className="h-6 w-6 text-accent" />,
+      text: "We distribute them to students for free",
+    },
+    {
+      icon: <Zap className="h-6 w-6 text-accent" />,
+      text: "You get impressions for months",
+    },
+  ];
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % steps.length);
+    }, 3000); // switch every second
+    return () => clearInterval(interval);
+  }, [steps.length]);
 
   return (
     <section
@@ -60,11 +84,44 @@ export function HeroSection() {
               Not just seen once. Not forgotten. Visible every day.
             </motion.p>
 
+            {/* === 3-STEP CAROUSEL === */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mt-4 h-16 flex items-center justify-center"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 2 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-accent/10 rounded-full">
+                      {steps[index].icon}
+                    </div>
+                    <span className="text-base md:text-lg font-medium text-foreground">
+                      {steps[index].text}
+                    </span>
+                  </div>
+
+                  {/* Arrow (not for last step) */}
+                  {index < steps.length - 1 && (
+                    <ChevronRight className="h-6 w-6 text-muted-foreground/60" />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
-              className="mt-10 flex items-center gap-4 flex-wrap"
+              className="mt-4 flex items-center gap-4 flex-wrap"
             >
               <Button
                 onClick={scrollToContact}
@@ -91,7 +148,7 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right side - Lottie Animation */}
+          {/* Right side - Animation */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
